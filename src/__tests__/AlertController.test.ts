@@ -42,12 +42,17 @@ describe('AlertController', () => {
       'Test message'
     );
     expect(mockResponse.status).toHaveBeenCalledWith(200);
-    expect(mockResponse.json).toHaveBeenCalledWith({
-      success: true,
-      message: 'Alert sent successfully',
-      channel: 'email',
-      recipient: 'test@example.com',
-    });
+    expect(mockResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: true,
+        data: {
+          message: 'Alert sent successfully',
+          channel: 'email',
+          recipient: 'test@example.com',
+        },
+        timestamp: expect.any(String),
+      })
+    );
   });
 
   it('should return 400 when destinatario is missing', async () => {
@@ -62,10 +67,17 @@ describe('AlertController', () => {
 
     expect(mockAlertService.enviarAlerta).not.toHaveBeenCalled();
     expect(mockResponse.status).toHaveBeenCalledWith(400);
-    expect(mockResponse.json).toHaveBeenCalledWith({
-      success: false,
-      error: 'destinatario y mensaje son requeridos',
-    });
+    expect(mockResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        error: {
+          message: 'destinatario y mensaje son requeridos',
+          errorCode: 'VALIDATION_ERROR',
+          statusCode: 400,
+        },
+        timestamp: expect.any(String),
+      })
+    );
   });
 
   it('should return 400 when mensaje is missing', async () => {
@@ -80,10 +92,17 @@ describe('AlertController', () => {
 
     expect(mockAlertService.enviarAlerta).not.toHaveBeenCalled();
     expect(mockResponse.status).toHaveBeenCalledWith(400);
-    expect(mockResponse.json).toHaveBeenCalledWith({
-      success: false,
-      error: 'destinatario y mensaje son requeridos',
-    });
+    expect(mockResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        error: {
+          message: 'destinatario y mensaje son requeridos',
+          errorCode: 'VALIDATION_ERROR',
+          statusCode: 400,
+        },
+        timestamp: expect.any(String),
+      })
+    );
   });
 
   it('should return 500 when service throws error', async () => {
@@ -101,9 +120,16 @@ describe('AlertController', () => {
     );
 
     expect(mockResponse.status).toHaveBeenCalledWith(500);
-    expect(mockResponse.json).toHaveBeenCalledWith({
-      success: false,
-      error: 'Service error',
-    });
+    expect(mockResponse.json).toHaveBeenCalledWith(
+      expect.objectContaining({
+        success: false,
+        error: {
+          message: 'Service error',
+          errorCode: 'INTERNAL_ERROR',
+          statusCode: 500,
+        },
+        timestamp: expect.any(String),
+      })
+    );
   });
 });
